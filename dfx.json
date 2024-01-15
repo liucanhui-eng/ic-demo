@@ -1,0 +1,23 @@
+{
+  "canisters": {
+    "test_call": {
+      "main": "src/call/main.mo",
+      "type": "motoko",
+      "dependencies": [
+        "nft"
+      ]
+    },
+    "nft": {
+      "main": "src/nft/icrc7.mo",
+      "type": "motoko"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
