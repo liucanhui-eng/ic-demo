@@ -1,0 +1,73 @@
+type TokenId = nat64;
+type Nft = 
+ record {
+   from: principal;
+   id: TokenId;
+   meta: MetadataDesc;
+   op: text;
+   owner: principal;
+   tid: nat;
+   to: principal;
+ };
+type MintReceiptPart = 
+ record {
+   nft: Nft;
+   user: principal;
+ };
+type MintReceipt = 
+ variant {
+   Err: ApiError;
+   Ok: MintReceiptPart;
+ };
+type MetadataVal = 
+ variant {
+   BlobContent: blob;
+   Nat16Content: nat16;
+   Nat32Content: nat32;
+   Nat64Content: nat64;
+   Nat8Content: nat8;
+   NatContent: nat;
+   TextContent: text;
+ };
+type MetadataPurpose = 
+ variant {
+   Preview;
+   Rendered;
+ };
+type MetadataPart = 
+ record {
+   data: blob;
+   key_val_data: vec MetadataKeyVal;
+   purpose: MetadataPurpose;
+ };
+type MetadataKeyVal = 
+ record {
+   key: text;
+   val: MetadataVal;
+ };
+type MetadataDesc = vec MetadataPart;
+type LogoResult = 
+ record {
+   data: text;
+   logo_type: text;
+ };
+type ICRC7NonFungibleToken = 
+ record {
+   logo: LogoResult;
+   maxLimit: nat16;
+   name: text;
+   symbol: text;
+ };
+type ICRC7NFT = 
+ service {
+   logtest: () -> (text);
+   mintICRC7: (principal, MetadataDesc, text) -> (MintReceipt);
+ };
+type ApiError = 
+ variant {
+   InvalidTokenId;
+   Other;
+   Unauthorized;
+   ZeroAddress;
+ };
+service : (principal, ICRC7NonFungibleToken) -> ICRC7NFT

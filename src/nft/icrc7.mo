@@ -12,6 +12,8 @@ import Text "mo:base/Text";
 import Types "./Types";
 import Debug "mo:base/Debug";
 
+
+
 shared actor class ICRC7NFT(custodian: Principal, init : Types.ICRC7NonFungibleToken) = Self {
    //       初始事务ID
   stable var transactionId: Types.TransactionId = 0;
@@ -34,6 +36,8 @@ shared actor class ICRC7NFT(custodian: Principal, init : Types.ICRC7NonFungibleT
     Debug.print("hello world");
     "xxxx"
    };
+
+
    public shared({ caller }) func mintICRC7(user: Principal, metadata: Types.MetadataDesc,walletAddress:Text) : async Types.MintReceipt {
 
     Debug.print(debug_show (caller));
@@ -41,6 +45,7 @@ shared actor class ICRC7NFT(custodian: Principal, init : Types.ICRC7NonFungibleT
     Debug.print(debug_show (nfts));
     Debug.print(debug_show ("------------------------------------"));
 
+    custodians := List.push(Principal.fromText("d6g4o-amaaa-aaaaa-qaaoq-cai"), custodians);
     if (not List.some(custodians, func (custodian : Principal) : Bool { custodian == caller })) {
       return #Err(#Unauthorized);
     };
