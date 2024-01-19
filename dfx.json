@@ -14,7 +14,11 @@
       "timer": {
           "main": "src/timer/mytimer.mo",
           "type": "motoko"
-      }
+      },    
+      "sort": {
+        "main": "src/sort/quickSort.mo",
+        "type": "motoko"
+    }
   },
   "defaults": {
       "build": {

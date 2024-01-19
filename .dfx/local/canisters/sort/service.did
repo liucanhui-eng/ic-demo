@@ -1,0 +1,5 @@
+service : {
+  QuickSortMain: (vec int) -> (vec int) query;
+  feibo: (nat) -> (nat) query;
+  greet: (text) -> (text) query;
+}
