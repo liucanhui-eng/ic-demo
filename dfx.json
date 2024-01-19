@@ -1,22 +1,26 @@
 {
   "canisters": {
-    "test_call": {
-      "main": "src/call/main.mo",
-      "type": "motoko",
-      "dependencies": [
-        "nft"
-      ]
-    },
-    "nft": {
-      "main": "src/nft/icrc7.mo",
-      "type": "motoko"
-    }
+      "test_call": {
+          "main": "src/call/main.mo",
+          "type": "motoko",
+          "dependencies": [
+              "nft"
+          ]
+      },
+      "nft": {
+          "main": "src/nft/icrc7.mo",
+          "type": "motoko"
+      },
+      "timer": {
+          "main": "src/timer/mytimer.mo",
+          "type": "motoko"
+      }
   },
   "defaults": {
-    "build": {
-      "args": "",
-      "packtool": ""
-    }
+      "build": {
+          "args": "",
+          "packtool": ""
+      }
   },
   "output_env_file": ".env",
   "version": 1
