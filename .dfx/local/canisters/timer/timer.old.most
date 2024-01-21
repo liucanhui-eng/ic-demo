@@ -1,4 +1,50 @@
 // Version: 1.0.0
+type List<T> = ?(T, List<T>);
+type MetadataDesc = [MetadataPart];
+type MetadataKeyVal = {key : Text; val : MetadataVal};
+type MetadataPart =
+  {data : Blob; key_val_data : [MetadataKeyVal]; purpose : MetadataPurpose};
+type MetadataPurpose = {#Preview; #Rendered};
+type MetadataVal =
+  {
+    #BlobContent : Blob;
+    #Nat16Content : Nat16;
+    #Nat32Content : Nat32;
+    #Nat64Content : Nat64;
+    #Nat8Content : Nat8;
+    #NatContent : Nat;
+    #TextContent : Text
+  };
+type Nft =
+  {
+    from : Principal;
+    id : TokenId;
+    meta : MetadataDesc;
+    op : Text;
+    owner : Principal;
+    tid : Nat;
+    to : Principal
+  };
+type TokenId = Nat64;
+type VftRecord =
+  {
+    index : Nat;
+    task_code : Text;
+    timestamps : Text;
+    user_id : Nat;
+    vft_total : Int
+  };
+type VftUserInfo =
+  {
+    details : [Nat];
+    nft : ?Nft;
+    task_code : Text;
+    userId : Nat;
+    vft_total : Int;
+    wallet : ?Text
+  };
 actor {
-  stable var entries : [(Text, Text)]
+  stable var lastIndex : Nat;
+  stable var userInfoEntry : [(Nat, VftUserInfo)];
+  stable var vftRecordList : ?(VftRecord, List<VftRecord>)
 };

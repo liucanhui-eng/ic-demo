@@ -1,8 +1,55 @@
+type VftUserInfo = 
+ record {
+   details: vec nat;
+   nft: opt Nft;
+   task_code: text;
+   userId: nat;
+   vft_total: int;
+   wallet: opt text;
+ };
 type TransformArgs = 
  record {
    context: blob;
    response: HttpResponsePayload;
  };
+type TokenId = nat64;
+type Nft = 
+ record {
+   from: principal;
+   id: TokenId;
+   meta: MetadataDesc;
+   op: text;
+   owner: principal;
+   tid: nat;
+   to: principal;
+ };
+type MetadataVal = 
+ variant {
+   BlobContent: blob;
+   Nat16Content: nat16;
+   Nat32Content: nat32;
+   Nat64Content: nat64;
+   Nat8Content: nat8;
+   NatContent: nat;
+   TextContent: text;
+ };
+type MetadataPurpose = 
+ variant {
+   Preview;
+   Rendered;
+ };
+type MetadataPart = 
+ record {
+   data: blob;
+   key_val_data: vec MetadataKeyVal;
+   purpose: MetadataPurpose;
+ };
+type MetadataKeyVal = 
+ record {
+   key: text;
+   val: MetadataVal;
+ };
+type MetadataDesc = vec MetadataPart;
 type HttpResponsePayload = 
  record {
    body: vec nat8;
@@ -21,9 +68,14 @@ type CanisterHttpResponsePayload =
    status: nat;
  };
 service : {
-  send_http_post_request: (text) -> (vec record {
-                                           text;
-                                           text;
-                                         });
+  TextToNat2: (text) -> (nat);
+  cleanAll: (nat, nat) -> (text);
+  queryLastIndex: () -> (nat) query;
+  queryRecordCount: () -> (nat) query;
+  queryUserInfoEntry: () -> (vec record {
+                                   nat;
+                                   VftUserInfo;
+                                 }) query;
   transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;
+  work: () -> (text);
 }

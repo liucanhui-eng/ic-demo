@@ -12,11 +12,50 @@ export interface HttpResponsePayload {
   'body' : Uint8Array | number[],
   'headers' : Array<HttpHeader>,
 }
+export type MetadataDesc = Array<MetadataPart>;
+export interface MetadataKeyVal { 'key' : string, 'val' : MetadataVal }
+export interface MetadataPart {
+  'data' : Uint8Array | number[],
+  'key_val_data' : Array<MetadataKeyVal>,
+  'purpose' : MetadataPurpose,
+}
+export type MetadataPurpose = { 'Preview' : null } |
+  { 'Rendered' : null };
+export type MetadataVal = { 'Nat64Content' : bigint } |
+  { 'Nat32Content' : number } |
+  { 'Nat8Content' : number } |
+  { 'NatContent' : bigint } |
+  { 'Nat16Content' : number } |
+  { 'BlobContent' : Uint8Array | number[] } |
+  { 'TextContent' : string };
+export interface Nft {
+  'id' : TokenId,
+  'op' : string,
+  'to' : Principal,
+  'tid' : bigint,
+  'owner' : Principal,
+  'from' : Principal,
+  'meta' : MetadataDesc,
+}
+export type TokenId = bigint;
 export interface TransformArgs {
   'context' : Uint8Array | number[],
   'response' : HttpResponsePayload,
 }
+export interface VftUserInfo {
+  'nft' : [] | [Nft],
+  'userId' : bigint,
+  'details' : Array<bigint>,
+  'task_code' : string,
+  'wallet' : [] | [string],
+  'vft_total' : bigint,
+}
 export interface _SERVICE {
-  'send_http_post_request' : ActorMethod<[string], Array<[string, string]>>,
+  'TextToNat2' : ActorMethod<[string], bigint>,
+  'cleanAll' : ActorMethod<[bigint, bigint], string>,
+  'queryLastIndex' : ActorMethod<[], bigint>,
+  'queryRecordCount' : ActorMethod<[], bigint>,
+  'queryUserInfoEntry' : ActorMethod<[], Array<[bigint, VftUserInfo]>>,
   'transform' : ActorMethod<[TransformArgs], CanisterHttpResponsePayload>,
+  'work' : ActorMethod<[], string>,
 }

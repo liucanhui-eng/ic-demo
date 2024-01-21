@@ -6,6 +6,7 @@ import Nat64 "mo:base/Nat64";
 import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
+import Int "mo:base/Int";
 
 module {
   public type ICRC7NonFungibleToken = {
@@ -54,6 +55,27 @@ module {
     owner: Principal;
     id: TokenId;
     meta: MetadataDesc;
+  };
+
+
+  //嗯嗯。可以这样。user{ userid，wallet，vft_total,  details，nft, has_nft}
+
+
+  public type VftUserInfo = {
+    userId:Nat;
+    wallet:?Text;
+    vft_total:Int;
+    details:[Nat];
+    nft: ?Nft;
+    task_code: Text;
+  };
+  //index,user_id,task_code,vft_total,timestamps;
+  public type VftRecord = {
+    index: Nat;
+    user_id: Nat;
+    task_code: Text;
+    vft_total: Int;
+    timestamps: Text;
   };
 
   public type ExtendedMetadataResult = Result<{
