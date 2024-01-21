@@ -1,8 +1,5 @@
 {
-  "nft": {
-    "ic": "e6v2x-gaaaa-aaaal-adneq-cai"
-  },
-  "test_call": {
-    "ic": "exwrl-qiaaa-aaaal-adnfa-cai"
-  }
+  "nft": {},
+  "sort": {},
+  "test_call": {}
 }

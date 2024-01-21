@@ -32,7 +32,7 @@ type VftRecord =
     task_code : Text;
     timestamps : Text;
     user_id : Nat;
-    vft_total : Int
+    vft_total : Float
   };
 type VftUserInfo =
   {
@@ -40,11 +40,13 @@ type VftUserInfo =
     nft : ?Nft;
     task_code : Text;
     userId : Nat;
-    vft_total : Int;
+    vft_total : Float;
     wallet : ?Text
   };
 actor {
+  stable var errorList : ?(Text, List<Text>);
   stable var lastIndex : Nat;
+  stable var timerId : Nat;
   stable var userInfoEntry : [(Nat, VftUserInfo)];
   stable var vftRecordList : ?(VftRecord, List<VftRecord>)
 };

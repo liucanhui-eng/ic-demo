@@ -1,5 +1,4 @@
 import { print } = "mo:base/Debug";
-import { recurringTimer } = "mo:base/Timer";
 import HttpTypes "HttpTypes";
 import Blob "mo:base/Blob";
 import Cycles "mo:base/ExperimentalCycles";
@@ -7,6 +6,7 @@ import Error "mo:base/Error";
 import Array "mo:base/Array";
 import Nat8 "mo:base/Nat8";
 import Nat64 "mo:base/Nat64";
+import Nat32 "mo:base/Nat32";
 import Text "mo:base/Text";
 import Result "mo:base/Result";
 import Nat "mo:base/Nat";
@@ -20,30 +20,43 @@ import Buffer "mo:base/Buffer";
 import Types "../nft/Types";
 import Debug "mo:base/Debug";
 import Bool "mo:base/Bool";
+import Float "mo:base/Float";
+import Char "mo:base/Char";
+import Int64 "mo:base/Int64";
+import { abs } = "mo:base/Int";
+import { now } = "mo:base/Time";
+import { setTimer; recurringTimer; cancelTimer } = "mo:base/Timer";
 
 actor {
   let oneSecond = 1_000_000_000; // nanoseconds
   let tenSecond = 1_000_000_000_0; // nanoseconds
-  let tenSecond10 = 1_000_000_000_000; // nanoseconds
 
-  private func printHello() : async () {
+  // private func printHello() : async () {
 
-    print("Hello, World!");
-  };
+  //   print("Hello, World!");
+  // };
 
-  ignore recurringTimer(#nanoseconds tenSecond10, printHello);
+  // ignore recurringTimer(#seconds hour24, work);
   // save data
   stable var userInfoEntry : [(Nat, Types.VftUserInfo)] = [];
+
   // stable var vftRecordList : [Types.VftRecord] = [];
   stable var lastIndex : Nat = 0;
   stable var vftRecordList = List.nil<Types.VftRecord>();
+  stable var errorList = List.nil<Text>();
+  stable var timerId : Nat = 0;
 
   //var myUserInfoMap = HashMap.fromIter<Text,Text>(entries.vals(), 32, Text.equal, Text.hash);
 
   // stable let myUserInfoMap : HashMap.HashMap<Text, Text> = HashMap.HashMap(32, Text.equal, Hash.hash);
 
   // send a request get vft info
-  public func work() : async Text {
+
+  let daySeconds = 24 * 60 * 60;
+
+  let tenMin = 2 * 60;
+
+  private func work() : async () {
 
     print("开始更新数据【更新前数据】=====================================================");
     // print("开始更新数据【更新前数据】");
@@ -56,12 +69,12 @@ actor {
       let result = await do_send_post();
       working := doWork(result);
     };
-    "处理成功";
   };
 
   func doWork(httpResp : Text) : Bool {
+    print("开始解析返回结果");
     if (httpResp == "-1") {
-      return true;
+      return false;
     };
     let lines = Iter.toArray(Text.split(httpResp, #char ';'));
     var skip = false;
@@ -74,10 +87,11 @@ actor {
     // print("开始更新数据【更新后数据】");
     // Debug.print(debug_show (userInfoEntry));
     Debug.print(debug_show ("处理完成。开始下一次循环"));
-    return false;
+    return true;
   };
 
   func do_send_post() : async Text {
+    print("发送http请求");
     let idempotency_key : Text = generateUUID();
     let ic : HttpTypes.IC = actor ("aaaaa-aa");
     let host : Text = "l2827e4fsc.execute-api.ap-southeast-1.amazonaws.com";
@@ -121,16 +135,15 @@ actor {
     //6. RETURN RESPONSE OF THE BODY
     // let result : Text = decoded_text # ". See more info of the request sent at: " # url # "/inspect";
     let result : Text = decoded_text;
-    print(result);
     result;
   };
 
   public query func queryLastIndex() : async Nat {
     lastIndex;
   };
-  public shared func cleanAll(index : Nat,pwd:Nat) : async Text {
+  public shared func cleanAll(index : Nat, pwd : Nat) : async Text {
 
-    if(pwd!=123456){
+    if (pwd != 123456) {
       return "清除失败。身份验证出错";
     };
 
@@ -174,6 +187,7 @@ actor {
   };
 
   func buildRecord(line : Text) : () {
+    print("开始解析返回结果2");
     //index,user_id,task_code,vft_total,timestamps
     let array = Iter.toArray(Text.split(line, #char ','));
     let index = array[0];
@@ -186,9 +200,10 @@ actor {
       task_code = taskCode;
       timestamps = timestamps;
       user_id = TextToNat(userId);
-      vft_total = TextToNat(vftTotal);
+      vft_total = textToFloat(vftTotal);
     };
     let recordIndex : Nat = List.size(vftRecordList);
+    print("更新recordIndex " #index);
     lastIndex := TextToNat(index);
     updateUserInfo(record, recordIndex);
     vftRecordList := List.push<Types.VftRecord>(record, vftRecordList);
@@ -203,12 +218,12 @@ actor {
   };
 
   func saveUserInfo(info : HashMap.HashMap<Nat, Types.VftUserInfo>) {
-    print("------------------------------");
     // Debug.print(debug_show(userInfoEntry));
     userInfoEntry := Iter.toArray<(Nat, Types.VftUserInfo)>(info.entries());
   };
 
   func updateUserInfo(record : Types.VftRecord, recordIndex : Nat) : () {
+    print("开始解析返回结果333");
     let myUserInfoMap = getMyUserInfoMap();
     let userId : Nat = record.user_id;
     let value = myUserInfoMap.get(userId);
@@ -252,12 +267,39 @@ actor {
     return convert(result);
   };
 
-  public shared func TextToNat2(input : Text) : async Nat {
-    let result = Nat.fromText(Iter.toArray(Text.split(input, #char '.'))[0]);
-    if (result == null) {
-      return 0;
+  func textToFloat(t : Text) : Float {
+
+    var i : Float = 1;
+    var f : Float = 0;
+    var isDecimal : Bool = false;
+
+    for (c in t.chars()) {
+      if (Char.isDigit(c)) {
+        let charToNat : Nat64 = Nat64.fromNat(Nat32.toNat(Char.toNat32(c) -48));
+        let natToFloat : Float = Float.fromInt64(Int64.fromNat64(charToNat));
+        if (isDecimal) {
+          let n : Float = natToFloat / Float.pow(10, i);
+          f := f + n;
+        } else {
+          f := f * 10 + natToFloat;
+        };
+        i := i + 1;
+      } else {
+        if (Char.equal(c, '.') or Char.equal(c, ',')) {
+          f := f / Float.pow(10, i); // Force decimal
+          f := f * Float.pow(10, i); // Correction
+          isDecimal := true;
+          i := 1;
+        } else {
+          errorList := List.push<Text>(t, errorList);
+        };
+      };
     };
-    return convert(result);
+    return f;
+  };
+
+  public shared func TextToNat2(input : Text) : async Float {
+    textToFloat(input);
   };
   func convert(n : ?Nat) : Nat {
     switch n {
@@ -275,4 +317,30 @@ actor {
     Buffer.toArray(buffer1);
   };
 
+  private func outCall() : async () {
+    print("定时查询服务启动");
+    let result = await do_send_post();
+    let q = doWork(result);
+    if (not q) {
+      print("关闭定时查询服务");
+      cancelTimer(timerId);
+    };
+  };
+  private func resetQuery() : async () {
+    print("重新启动定时服务");
+    ignore recurringTimer(#seconds tenMin, outCall);
+  };
+  ignore setTimer(
+    #seconds(daySeconds - abs(now() / 1_000_000_000) % daySeconds),
+    func() : async () {
+      ignore recurringTimer(#seconds daySeconds, resetQuery);
+    },
+  );
+
+  timerId := setTimer(
+    #seconds(1),
+    func() : async () {
+      ignore recurringTimer(#seconds tenMin, outCall);
+    },
+  );
 };

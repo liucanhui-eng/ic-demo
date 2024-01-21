@@ -35,7 +35,7 @@ export const idlFactory = ({ IDL }) => {
     'details' : IDL.Vec(IDL.Nat),
     'task_code' : IDL.Text,
     'wallet' : IDL.Opt(IDL.Text),
-    'vft_total' : IDL.Int,
+    'vft_total' : IDL.Float64,
   });
   const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
   const HttpResponsePayload = IDL.Record({
@@ -53,7 +53,7 @@ export const idlFactory = ({ IDL }) => {
     'headers' : IDL.Vec(HttpHeader),
   });
   return IDL.Service({
-    'TextToNat2' : IDL.Func([IDL.Text], [IDL.Nat], []),
+    'TextToNat2' : IDL.Func([IDL.Text], [IDL.Float64], []),
     'cleanAll' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Text], []),
     'queryLastIndex' : IDL.Func([], [IDL.Nat], ['query']),
     'queryRecordCount' : IDL.Func([], [IDL.Nat], ['query']),
@@ -67,7 +67,6 @@ export const idlFactory = ({ IDL }) => {
         [CanisterHttpResponsePayload],
         ['query'],
       ),
-    'work' : IDL.Func([], [IDL.Text], []),
   });
 };
 export const init = ({ IDL }) => { return []; };

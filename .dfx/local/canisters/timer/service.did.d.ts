@@ -48,14 +48,13 @@ export interface VftUserInfo {
   'details' : Array<bigint>,
   'task_code' : string,
   'wallet' : [] | [string],
-  'vft_total' : bigint,
+  'vft_total' : number,
 }
 export interface _SERVICE {
-  'TextToNat2' : ActorMethod<[string], bigint>,
+  'TextToNat2' : ActorMethod<[string], number>,
   'cleanAll' : ActorMethod<[bigint, bigint], string>,
   'queryLastIndex' : ActorMethod<[], bigint>,
   'queryRecordCount' : ActorMethod<[], bigint>,
   'queryUserInfoEntry' : ActorMethod<[], Array<[bigint, VftUserInfo]>>,
   'transform' : ActorMethod<[TransformArgs], CanisterHttpResponsePayload>,
-  'work' : ActorMethod<[], string>,
 }
