@@ -44,8 +44,8 @@ export interface TransformArgs {
 }
 export interface VftUserInfo {
   'nft' : [] | [Nft],
-  'userId' : bigint,
-  'details' : Array<bigint>,
+  'userId' : string,
+  'details' : string,
   'task_code' : string,
   'wallet' : [] | [string],
   'vft_total' : number,
@@ -55,6 +55,7 @@ export interface _SERVICE {
   'cleanAll' : ActorMethod<[bigint, bigint], string>,
   'queryLastIndex' : ActorMethod<[], bigint>,
   'queryRecordCount' : ActorMethod<[], bigint>,
-  'queryUserInfoEntry' : ActorMethod<[], Array<[bigint, VftUserInfo]>>,
+  'queryUserInfoEntry' : ActorMethod<[], Array<[string, VftUserInfo]>>,
   'transform' : ActorMethod<[TransformArgs], CanisterHttpResponsePayload>,
+  'work' : ActorMethod<[], undefined>,
 }

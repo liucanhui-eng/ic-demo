@@ -38,13 +38,14 @@ actor {
 
   // ignore recurringTimer(#seconds hour24, work);
   // save data
-  stable var userInfoEntry : [(Nat, Types.VftUserInfo)] = [];
+  stable var userInfoEntry : [(Text, Types.VftUserInfo)] = [];
 
   // stable var vftRecordList : [Types.VftRecord] = [];
   stable var lastIndex : Nat = 0;
   stable var vftRecordList = List.nil<Types.VftRecord>();
   stable var errorList = List.nil<Text>();
   stable var timerId : Nat = 0;
+
 
   //var myUserInfoMap = HashMap.fromIter<Text,Text>(entries.vals(), 32, Text.equal, Text.hash);
 
@@ -56,7 +57,7 @@ actor {
 
   let tenMin = 2 * 60;
 
-  private func work() : async () {
+  public func work() : async () {
 
     print("开始更新数据【更新前数据】=====================================================");
     // print("开始更新数据【更新前数据】");
@@ -65,10 +66,10 @@ actor {
     // Debug.print(debug_show (vftRecordList));
 
     var working : Bool = true;
-    while (working) {
-      let result = await do_send_post();
-      working := doWork(result);
-    };
+    // while (working) {
+    let result = await do_send_post();
+    working := doWork(result);
+    // };
   };
 
   func doWork(httpResp : Text) : Bool {
@@ -76,6 +77,7 @@ actor {
     if (httpResp == "-1") {
       return false;
     };
+    //3000次运算
     let lines = Iter.toArray(Text.split(httpResp, #char ';'));
     var skip = false;
     for (outerElement in Array.vals(lines)) {
@@ -153,7 +155,7 @@ actor {
     "清除成功";
   };
 
-  public query func queryUserInfoEntry() : async [(Nat, Types.VftUserInfo)] {
+  public query func queryUserInfoEntry() : async [(Text, Types.VftUserInfo)] {
     userInfoEntry;
   };
   public query func queryRecordCount() : async Nat {
@@ -189,6 +191,7 @@ actor {
   func buildRecord(line : Text) : () {
     print("开始解析返回结果2");
     //index,user_id,task_code,vft_total,timestamps
+    //3000 * 5=15000
     let array = Iter.toArray(Text.split(line, #char ','));
     let index = array[0];
     let userId = array[1];
@@ -196,10 +199,10 @@ actor {
     let vftTotal = array[3];
     let timestamps = array[4];
     let record : Types.VftRecord = {
-      index = TextToNat(index);
+      index = index;
       task_code = taskCode;
       timestamps = timestamps;
-      user_id = TextToNat(userId);
+      user_id = userId;
       vft_total = textToFloat(vftTotal);
     };
     let recordIndex : Nat = List.size(vftRecordList);
@@ -209,23 +212,23 @@ actor {
     vftRecordList := List.push<Types.VftRecord>(record, vftRecordList);
   };
 
-  func getMyUserInfoMap() : HashMap.HashMap<Nat, Types.VftUserInfo> {
-    let myUserInfoMap = HashMap.HashMap<Nat, Types.VftUserInfo>(32, Nat.equal, Hash.hash);
+  func getMyUserInfoMap() : HashMap.HashMap<Text, Types.VftUserInfo> {
+    let myUserInfoMap = HashMap.HashMap<Text, Types.VftUserInfo>(32, Text.equal, Text.hash);
     for ((k, v) in userInfoEntry.vals()) {
       myUserInfoMap.put(k, v);
     };
     myUserInfoMap;
   };
 
-  func saveUserInfo(info : HashMap.HashMap<Nat, Types.VftUserInfo>) {
+  func saveUserInfo(info : HashMap.HashMap<Text, Types.VftUserInfo>) {
     // Debug.print(debug_show(userInfoEntry));
-    userInfoEntry := Iter.toArray<(Nat, Types.VftUserInfo)>(info.entries());
+    userInfoEntry := Iter.toArray<(Text, Types.VftUserInfo)>(info.entries());
   };
 
   func updateUserInfo(record : Types.VftRecord, recordIndex : Nat) : () {
     print("开始解析返回结果333");
     let myUserInfoMap = getMyUserInfoMap();
-    let userId : Nat = record.user_id;
+    let userId : Text = record.user_id;
     let value = myUserInfoMap.get(userId);
     var user : ?Types.VftUserInfo = value;
     switch value {
@@ -233,7 +236,7 @@ actor {
         myUserInfoMap.put(
           userId,
           {
-            details = [recordIndex];
+            details = Nat.toText(recordIndex);
             nft = null;
             task_code = record.task_code;
             userId = record.user_id;
@@ -246,7 +249,7 @@ actor {
         myUserInfoMap.put(
           userId,
           {
-            details = arrayNatAdd(value.details, recordIndex);
+            details = value.details # "," #Nat.toText(recordIndex);
             nft = null;
             task_code = record.task_code;
             userId = record.user_id;
@@ -308,14 +311,14 @@ actor {
     };
   };
 
-  func arrayNatAdd(array : [Nat], input : Nat) : [Nat] {
-    let buffer1 = Buffer.Buffer<Nat>(array.size() +1);
-    for (entry in array.vals()) {
-      buffer1.add(entry);
-    };
-    buffer1.add(input);
-    Buffer.toArray(buffer1);
-  };
+  // func arrayNatAdd(array : [Text], input : Text) : [Text] {
+  //   let buffer1 = Buffer.Buffer<Text>(array.size() +1);
+  //   for (entry in array.vals()) {
+  //     buffer1.add(entry);
+  //   };
+  //   buffer1.add(input);
+  //   Buffer.toArray(buffer1);
+  // };
 
   private func outCall() : async () {
     print("定时查询服务启动");

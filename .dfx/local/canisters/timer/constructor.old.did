@@ -1,9 +1,9 @@
 type VftUserInfo = 
  record {
-   details: vec nat;
+   details: text;
    nft: opt Nft;
    task_code: text;
-   userId: nat;
+   userId: text;
    vft_total: float64;
    wallet: opt text;
  };
@@ -73,8 +73,9 @@ service : {
   queryLastIndex: () -> (nat) query;
   queryRecordCount: () -> (nat) query;
   queryUserInfoEntry: () -> (vec record {
-                                   nat;
+                                   text;
                                    VftUserInfo;
                                  }) query;
   transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;
+  work: () -> ();
 }

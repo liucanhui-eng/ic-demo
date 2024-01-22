@@ -8,6 +8,8 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Int "mo:base/Int";
 import Float "mo:base/Float";
+import Array "mo:base/Array";
+import List "mo:base/List";
 
 module {
   public type ICRC7NonFungibleToken = {
@@ -63,17 +65,17 @@ module {
 
 
   public type VftUserInfo = {
-    userId:Nat;
+    userId:Text;
     wallet:?Text;
     vft_total:Float;
-    details:[Nat];
+    details:Text;
     nft: ?Nft;
     task_code: Text;
   };
   //index,user_id,task_code,vft_total,timestamps;
   public type VftRecord = {
-    index: Nat;
-    user_id: Nat;
+    index: Text;
+    user_id: Text;
     task_code: Text;
     vft_total: Float;
     timestamps: Text;

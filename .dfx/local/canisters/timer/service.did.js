@@ -31,8 +31,8 @@ export const idlFactory = ({ IDL }) => {
   });
   const VftUserInfo = IDL.Record({
     'nft' : IDL.Opt(Nft),
-    'userId' : IDL.Nat,
-    'details' : IDL.Vec(IDL.Nat),
+    'userId' : IDL.Text,
+    'details' : IDL.Text,
     'task_code' : IDL.Text,
     'wallet' : IDL.Opt(IDL.Text),
     'vft_total' : IDL.Float64,
@@ -59,7 +59,7 @@ export const idlFactory = ({ IDL }) => {
     'queryRecordCount' : IDL.Func([], [IDL.Nat], ['query']),
     'queryUserInfoEntry' : IDL.Func(
         [],
-        [IDL.Vec(IDL.Tuple(IDL.Nat, VftUserInfo))],
+        [IDL.Vec(IDL.Tuple(IDL.Text, VftUserInfo))],
         ['query'],
       ),
     'transform' : IDL.Func(
@@ -67,6 +67,7 @@ export const idlFactory = ({ IDL }) => {
         [CanisterHttpResponsePayload],
         ['query'],
       ),
+    'work' : IDL.Func([], [], []),
   });
 };
 export const init = ({ IDL }) => { return []; };
