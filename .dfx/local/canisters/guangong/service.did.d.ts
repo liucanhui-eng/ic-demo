@@ -17,12 +17,8 @@ export interface TransformArgs {
   'response' : HttpResponsePayload,
 }
 export interface _SERVICE {
-  'TextToNat2' : ActorMethod<[string], number>,
-  'queryDetails' : ActorMethod<[string], [] | [string]>,
-  'queryLastIndex' : ActorMethod<[], string>,
+  'querUserInfo' : ActorMethod<[bigint], [] | [string]>,
   'queryRecord' : ActorMethod<[bigint], [] | [string]>,
-  'queryRecordCount' : ActorMethod<[], bigint>,
-  'queryUserVftTotal' : ActorMethod<[string], [] | [string]>,
+  'queryVftTotal' : ActorMethod<[bigint], [] | [string]>,
   'transform' : ActorMethod<[TransformArgs], CanisterHttpResponsePayload>,
-  'work' : ActorMethod<[], undefined>,
 }

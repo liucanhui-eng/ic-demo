@@ -28,6 +28,8 @@ import { now } = "mo:base/Time";
 import Region "mo:base/Region";
 import { setTimer; recurringTimer; cancelTimer } = "mo:base/Timer";
 import Nat16 "mo:base/Nat16";
+import Random "mo:base/Random";
+import Option "mo:base/Option";
 
 actor {
   let oneSecond = 1_000_000_000; // nanoseconds
@@ -38,11 +40,16 @@ actor {
     var bytes_count : Nat64 = 0;
     vftRecord = Region.new();
     var elems_count : Nat64 = 0;
-    var userInfoList = List.nil<Types.VftUserInfo>();
-    // var userInfoList2:List.List<Types.VftUserInfo> = List.nil();
+    // var userInfoList = List.nil<Types.VftUserInfo>();
+    var info : [var [var ?Types.VftUserInfo]] = Array.init<[var ?Types.VftUserInfo]>(1, Array.init<?Types.VftUserInfo>(1000, null));
   };
 
+  type zuobiao = {
+    page : Nat;
+    index : Nat;
+  };
   stable var testData : Text = "-1";
+  stable var testUserId : Nat = 0;
 
   // public type Elem = {
   //   pos : Nat64;
@@ -55,21 +62,13 @@ actor {
     Record.elems_count;
   };
   public func queryUserVftTotal(userId : Text) : async ?Text {
-    for (user in List.toIter<Types.VftUserInfo>(Record.userInfoList)) {
-      if (user.userId == userId) {
-        return ?user.vft_total_statements;
-      };
-    };
-    return null;
+    ?"  ";
   };
-  public func queryDetails(userId : Text) : async ?Text {
-    for (user in List.toIter<Types.VftUserInfo>(Record.userInfoList)) {
-      if (user.userId == userId) {
-        return ?user.details;
-      };
-    };
-    return null;
+  public func queryDetails222(userId : Text) : async ?Text {
+    ?"";
   };
+
+
 
   public func queryRecord(index : Nat64) : async ?Text {
     assert index < Record.elems_count;
@@ -109,7 +108,7 @@ actor {
 
   let tenMin = 10 * 60;
 
-  let oneMin = 1 * 60;
+  let oneMin = 5;
 
   public func work() : async () {
 
@@ -127,7 +126,7 @@ actor {
   };
 
   func doWork(httpResp : Text) : Bool {
-    print("开始解析返回结果" # httpResp);
+    print("开始解析返回结果");
     if (httpResp == "-1") {
       return false;
     };
@@ -142,7 +141,7 @@ actor {
     };
     // print("开始更新数据【更新后数据】");
     // Debug.print(debug_show (userInfoEntry));
-    Debug.print(debug_show ("处理完成。开始下一次循环"));
+    Debug.print(debug_show ("处理完成。开始下一次循环" # Nat64.toText(Record.elems_count)));
     return true;
   };
   func regionEnsureSizeBytes(r : Region, new_byte_count : Nat64) {
@@ -240,19 +239,25 @@ actor {
     let vftTotal = array[3];
     lastIndex := index;
     print("更新recordIndex " #index);
-    updateUserInfo(userId, vftTotal, taskCode, recordIndex);
+    updateUserInfo(Nat.toText(testUserId), vftTotal, taskCode, recordIndex);
   };
 
   func updateUserInfo(userId : Text, vft_total : Text, taskCode : Text, index : Nat64) : () {
-    print("开始解析返回结果333");
-    for (user in List.toIter<Types.VftUserInfo>(Record.userInfoList)) {
-      if (user.userId == userId) {
+    print("开始解析返回结果" # userId);
+    testUserId += 1;
+
+    let user = getUser(testUserId);
+    let user1 = Option.get(user, null);
+
+    switch (user) {
+      case (null) {
+        addUser(buildUserInfo(taskCode, userId, vft_total, index), testUserId);
+      };
+      case (?user) {
         user.vft_total_statements := user.vft_total_statements # "," # vft_total;
         user.details := user.details # "," # Nat64.toText(index);
-        return;
       };
     };
-    Record.userInfoList := List.push<Types.VftUserInfo>(buildUserInfo(taskCode, userId, vft_total, index), Record.userInfoList);
   };
 
   func buildUserInfo(taskCode : Text, userId : Text, vft_total : Text, index : Nat64) : Types.VftUserInfo {
@@ -268,63 +273,57 @@ actor {
     user;
   };
 
-  func TextToNat(input : Text) : Nat {
-    let result = Nat.fromText(Iter.toArray(Text.split(input, #char '.'))[0]);
-    if (result == null) {
-      return 0;
-    };
-    return convert(result);
+  func addUser(user : Types.VftUserInfo, userId : Nat) : () {
+    let zb = getZuobiao(userId);
+    kuorong(testUserId);
+    Record.info[zb.page][zb.index] := ?user;
   };
 
-  func textToFloat(t : Text) : Float {
-
-    var i : Float = 1;
-    var f : Float = 0;
-    var isDecimal : Bool = false;
-
-    for (c in t.chars()) {
-      if (Char.isDigit(c)) {
-        let charToNat : Nat64 = Nat64.fromNat(Nat32.toNat(Char.toNat32(c) -48));
-        let natToFloat : Float = Float.fromInt64(Int64.fromNat64(charToNat));
-        if (isDecimal) {
-          let n : Float = natToFloat / Float.pow(10, i);
-          f := f + n;
-        } else {
-          f := f * 10 + natToFloat;
-        };
-        i := i + 1;
-      } else {
-        if (Char.equal(c, '.') or Char.equal(c, ',')) {
-          f := f / Float.pow(10, i); // Force decimal
-          f := f * Float.pow(10, i); // Correction
-          isDecimal := true;
-          i := 1;
-        } else {
-          errorList := List.push<Text>(t, errorList);
-        };
-      };
-    };
-    return f;
-  };
-
-  public shared func TextToNat2(input : Text) : async Float {
-    textToFloat(input);
-  };
-  func convert(n : ?Nat) : Nat {
-    switch n {
-      case (null) { 0 };
-      case (?n) { n };
+  func getZuobiao(input : Nat) : zuobiao {
+    let page = getPage(input);
+    {
+      page = page;
+      index = getIndex(input);
     };
   };
 
-  // func arrayNatAdd(array : [Text], input : Text) : [Text] {
-  //   let buffer1 = Buffer.Buffer<Text>(array.size() +1);
-  //   for (entry in array.vals()) {
-  //     buffer1.add(entry);
-  //   };
-  //   buffer1.add(input);
-  //   Buffer.toArray(buffer1);
-  // };
+  func getUser(input : Nat) : ?Types.VftUserInfo {
+    let zb = getZuobiao(input);
+    return Record.info[zb.page][zb.index];
+  };
+
+  func doGetData(zb : zuobiao) : ?Types.VftUserInfo {
+    return Record.info[zb.page][zb.index];
+  };
+
+  func getIndex(userId : Nat) : Nat {
+    var index : Nat = userId % 1000;
+    index;
+  };
+  func getPage(userId : Nat) : Nat {
+    var page : Nat = userId / 1000;
+    page;
+  };
+  func kuorong(userId : Nat) : () {
+    assert (userId < (1000 * (Record.info.size() +10)));
+     print("======================================扩容"#Nat.toText(userId));
+     print("======================================扩容"#Nat.toText(1000 * Record.info.size()));
+    if ((userId+1) >= 1000 * Record.info.size()) {
+      print("======================================扩容");
+      Record.info := doKuorong(Record.info);
+    };
+  };
+  func doKuorong(array : [var [var ?Types.VftUserInfo]]) : [var [var ?Types.VftUserInfo]] {
+    let buffer = Buffer.Buffer<[var ?Types.VftUserInfo]>(array.size() +10);
+    let newArray : [var [var ?Types.VftUserInfo]] = Array.init<[var ?Types.VftUserInfo]>(10, Array.init<?Types.VftUserInfo>(1000, null));
+    for (entry in array.vals()) {
+      buffer.add(entry);
+    };
+    for (entry in newArray.vals()) {
+      buffer.add(entry);
+    };
+    return Array.thaw(Buffer.toArray<[var ?Types.VftUserInfo]>(buffer));
+  };
 
   private func outCall() : async () {
     print("定时查询服务启动,记录数{}" # Nat64.toText(Record.elems_count));

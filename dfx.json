@@ -1,31 +1,16 @@
 {
-  "canisters": {
-      "test_call": {
-          "main": "src/call/main.mo",
-          "type": "motoko",
-          "dependencies": [
-              "nft"
-          ]
-      },
-      "nft": {
-          "main": "src/nft/icrc7.mo",
-          "type": "motoko"
-      },
-      "timer": {
-          "main": "src/timer/mytimer.mo",
-          "type": "motoko"
-      },    
-      "sort": {
-        "main": "src/sort/quickSort.mo",
-        "type": "motoko"
-    }
-  },
-  "defaults": {
-      "build": {
-          "args": "",
-          "packtool": ""
-      }
-  },
-  "output_env_file": ".env",
-  "version": 1
+    "canisters": {
+        "guangong": {
+            "main": "src/timer/guangong.mo",
+            "type": "motoko"
+        }
+    },
+    "defaults": {
+        "build": {
+            "args": "",
+            "packtool": ""
+        }
+    },
+    "output_env_file": ".env",
+    "version": 1
 }

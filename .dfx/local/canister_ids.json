@@ -2,19 +2,23 @@
   "__Candid_UI": {
     "local": "dxfxs-weaaa-aaaaa-qaapa-cai"
   },
+  "guangong": {
+    "local": "f3nhr-bmaaa-aaaaa-qaayq-cai"
+  },
   "mysite_frontend": {
     "local": "dmalx-m4aaa-aaaaa-qaanq-cai"
   },
-  "nft": {
-    "local": "dzh22-nuaaa-aaaaa-qaaoa-cai"
-  },
-  "sort": {
-    "local": "gl6nx-5maaa-aaaaa-qaaqq-cai"
-  },
-  "test_call": {
-    "local": "d6g4o-amaaa-aaaaa-qaaoq-cai"
-  },
+  "nft": {},
+  "sort": {},
+  "test_call": {},
   "timer": {
     "local": "gm7ld-quaaa-aaaaa-qaaqa-cai"
+  },
+  "timer2": {},
+  "timer3": {
+    "local": "h5vv4-i4aaa-aaaaa-qaavq-cai"
+  },
+  "timer888": {
+    "local": "g6z42-4eaaa-aaaaa-qaata-cai"
   }
 }

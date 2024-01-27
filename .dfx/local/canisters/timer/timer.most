@@ -25,28 +25,29 @@ type Nft =
     tid : Nat;
     to : Principal
   };
+type Region__1 = Region;
+type Region__2 = Region__1;
 type TokenId = Nat64;
-type VftRecord =
-  {
-    index : Text;
-    task_code : Text;
-    timestamps : Text;
-    user_id : Text;
-    vft_total : Float
-  };
 type VftUserInfo =
   {
-    details : Text;
+    var details : Text;
     nft : ?Nft;
     task_code : Text;
     userId : Text;
-    vft_total : Float;
+    vft_total : ?Float;
+    var vft_total_statements : Text;
     wallet : ?Text
   };
 actor {
+  stable var Record :
+    {
+      bytes : Region__2;
+      var bytes_count : Nat64;
+      var elems_count : Nat64;
+      var userInfoList : List<VftUserInfo>;
+      vftRecord : Region__2
+    };
   stable var errorList : ?(Text, List<Text>);
-  stable var lastIndex : Nat;
-  stable var timerId : Nat;
-  stable var userInfoEntry : [(Text, VftUserInfo)];
-  stable var vftRecordList : ?(VftRecord, List<VftRecord>)
+  stable var lastIndex : Text;
+  stable var timerId : Nat
 };

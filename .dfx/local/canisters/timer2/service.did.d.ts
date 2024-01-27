@@ -17,8 +17,7 @@ export interface TransformArgs {
   'response' : HttpResponsePayload,
 }
 export interface _SERVICE {
-  'TextToNat2' : ActorMethod<[string], number>,
-  'queryDetails' : ActorMethod<[string], [] | [string]>,
+  'queryDetails222' : ActorMethod<[string], [] | [string]>,
   'queryLastIndex' : ActorMethod<[], string>,
   'queryRecord' : ActorMethod<[bigint], [] | [string]>,
   'queryRecordCount' : ActorMethod<[], bigint>,

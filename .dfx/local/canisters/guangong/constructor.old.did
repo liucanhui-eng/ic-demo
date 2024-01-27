@@ -21,8 +21,8 @@ type CanisterHttpResponsePayload =
    status: nat;
  };
 service : {
-  TextToNat2: (text) -> (float64);
-  queryLastIndex: () -> (text) query;
+  querUserInfo: (nat) -> (opt text);
+  querVftTotal: (nat) -> (opt text);
+  queryRecord: (nat64) -> (opt text);
   transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;
-  work: () -> ();
 }

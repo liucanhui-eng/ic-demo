@@ -15,8 +15,7 @@ export const idlFactory = ({ IDL }) => {
     'headers' : IDL.Vec(HttpHeader),
   });
   return IDL.Service({
-    'TextToNat2' : IDL.Func([IDL.Text], [IDL.Float64], []),
-    'queryDetails' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
+    'queryDetails222' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
     'queryLastIndex' : IDL.Func([], [IDL.Text], ['query']),
     'queryRecord' : IDL.Func([IDL.Nat64], [IDL.Opt(IDL.Text)], []),
     'queryRecordCount' : IDL.Func([], [IDL.Nat64], []),

@@ -67,8 +67,9 @@ module {
   public type VftUserInfo = {
     userId:Text;
     wallet:?Text;
-    vft_total:Float;
-    details:Text;
+    vft_total:?Float;
+    var vft_total_statements: Text;
+    var details:Text;
     nft: ?Nft;
     task_code: Text;
   };
@@ -77,7 +78,7 @@ module {
     index: Text;
     user_id: Text;
     task_code: Text;
-    vft_total: Float;
+    vft_total: Text;
     timestamps: Text;
   };
 

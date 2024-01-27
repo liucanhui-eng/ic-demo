@@ -30,7 +30,7 @@ type Region__2 = Region__1;
 type TokenId = Nat64;
 type VftUserInfo =
   {
-    details : Text;
+    var details : Text;
     nft : ?Nft;
     task_code : Text;
     userId : Text;
@@ -41,12 +41,16 @@ type VftUserInfo =
 actor {
   stable var Record :
     {
+      var arrayCount : Nat;
+      bytes : Region__2;
       var bytes_count : Nat64;
-      var userInfoList : List<VftUserInfo>;
-      vftRecord : Region__2;
-      var vftRecordIndex : Nat64
+      var elems_count : Nat64;
+      var info : [var [var ?VftUserInfo]];
+      vftRecord : Region__2
     };
   stable var errorList : ?(Text, List<Text>);
   stable var lastIndex : Text;
+  stable var testData : Text;
+  stable var testUserId : Nat;
   stable var timerId : Nat
 };

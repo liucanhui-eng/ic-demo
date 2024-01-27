@@ -15,18 +15,14 @@ export const idlFactory = ({ IDL }) => {
     'headers' : IDL.Vec(HttpHeader),
   });
   return IDL.Service({
-    'TextToNat2' : IDL.Func([IDL.Text], [IDL.Float64], []),
-    'queryDetails' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
-    'queryLastIndex' : IDL.Func([], [IDL.Text], ['query']),
+    'querUserInfo' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Text)], []),
     'queryRecord' : IDL.Func([IDL.Nat64], [IDL.Opt(IDL.Text)], []),
-    'queryRecordCount' : IDL.Func([], [IDL.Nat64], []),
-    'queryUserVftTotal' : IDL.Func([IDL.Text], [IDL.Opt(IDL.Text)], []),
+    'queryVftTotal' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Text)], []),
     'transform' : IDL.Func(
         [TransformArgs],
         [CanisterHttpResponsePayload],
         ['query'],
       ),
-    'work' : IDL.Func([], [], []),
   });
 };
 export const init = ({ IDL }) => { return []; };
