@@ -1,0 +1,28 @@
+type TransformArgs = 
+ record {
+   context: blob;
+   response: HttpResponsePayload;
+ };
+type HttpResponsePayload = 
+ record {
+   body: vec nat8;
+   headers: vec HttpHeader;
+   status: nat;
+ };
+type HttpHeader = 
+ record {
+   name: text;
+   value: text;
+ };
+type CanisterHttpResponsePayload = 
+ record {
+   body: vec nat8;
+   headers: vec HttpHeader;
+   status: nat;
+ };
+service : {
+  querUserInfo: (nat) -> (opt text);
+  queryRecord: (nat64) -> (opt text);
+  queryVftTotal: (nat) -> (opt text);
+  transform: (TransformArgs) -> (CanisterHttpResponsePayload) query;
+}

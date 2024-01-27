@@ -1,7 +1,7 @@
 {
     "canisters": {
-        "guangong": {
-            "main": "src/timer/guangong.mo",
+        "vft_sync": {
+            "main": "src/timer/vft_sync.mo",
             "type": "motoko"
         }
     },

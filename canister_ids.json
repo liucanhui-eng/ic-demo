@@ -1,5 +1,8 @@
 {
   "nft": {},
   "sort": {},
-  "test_call": {}
+  "test_call": {},
+  "vft_sync": {
+    "ic": "74izz-tyaaa-aaaal-adpua-cai"
+  }
 }
